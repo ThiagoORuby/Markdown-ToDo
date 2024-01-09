@@ -11,6 +11,7 @@ class BaseTable(DeclarativeBase):
     id: Mapped[int] = mapped_column(sa.Integer, primary_key=True)
     createdAt: Mapped[datetime] = mapped_column(
         sa.DateTime, default=lambda: datetime.now(timezone.utc))
+    updatedAt: Mapped[Optional[datetime]]
 
 
 class User(BaseTable):
@@ -21,7 +22,7 @@ class User(BaseTable):
     email: Mapped[str]
     password: Mapped[str]
 
-    documents: Mapped["Document"] = relationship(back_populates="user")
+    documents: Mapped[list["Document"]] = relationship(back_populates="user")
 
     def verify_password(self, password: str):
         return hash.bcrypt.verify(password, self.password)
@@ -35,7 +36,7 @@ class Document(BaseTable):
     body: Mapped[Optional[str]]
     user_id: Mapped[int] = mapped_column(sa.Integer, sa.ForeignKey("user.id"))
     user: Mapped["User"] = relationship(back_populates="documents")
-    images: Mapped["Image"] = relationship()
+    images: Mapped[list["Image"]] = relationship()
 
 
 class Image(BaseTable):
