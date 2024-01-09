@@ -1,6 +1,49 @@
 from datetime import datetime
+from typing import List, Optional
 
 from pydantic import BaseModel
+
+
+class ImageBase(BaseModel):
+
+    name: str
+    url: str
+
+    class Config:
+        from_attributes = True
+
+
+class ImageIn(ImageBase):
+
+    doc_id: int
+
+
+class ImageOut(ImageBase):
+
+    id: int
+    createdAt: datetime
+
+
+class DocumentBase(BaseModel):
+
+    title: str
+    body: str
+
+    class Config:
+        from_attributes = True
+
+
+class DocumentIn(DocumentBase):
+
+    user_id: Optional[int]
+
+
+class DocumentOut(DocumentBase):
+
+    id: int
+    createdAt: datetime
+    updatedAt: Optional[datetime]
+    images: Optional[List[ImageOut]]
 
 
 class UserBase(BaseModel):
@@ -17,20 +60,4 @@ class UserIn(UserBase):
 
 class UserOut(UserBase):
     id: int
-
-
-class DocumentBase(BaseModel):
-
-    id: int
-    title: str
-    body: str
-    created_at: datetime
-    user_id: int
-
-
-class ImageBase(BaseModel):
-
-    id: int
-    name: str
-    url: str
-    doc_id: int
+    documents: Optional[List[DocumentOut]]
