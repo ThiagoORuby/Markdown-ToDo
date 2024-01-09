@@ -8,7 +8,7 @@ from schemas import UserIn, UserOut
 from services import UserService
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/auth")
+router = APIRouter(prefix="/auth", tags=['auth'])
 
 
 @router.post("/register")
