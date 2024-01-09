@@ -1,43 +1,48 @@
-from database import Base
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
-from passlib import hash
+from datetime import datetime, timezone
+from typing import Optional
 
-class User(Base):
+import sqlalchemy as sa
+from passlib import hash
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+
+
+class BaseTable(DeclarativeBase):
+
+    id: Mapped[int] = mapped_column(sa.Integer, primary_key=True)
+    createdAt: Mapped[datetime] = mapped_column(
+        sa.DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class User(BaseTable):
 
     __tablename__ = "user"
 
-    id = Column(Integer, primary_key=True)
-    username = Column(String)
-    email = Column(String)
-    hash_password = Column(String)
-    created_at = Column(DateTime)
+    username: Mapped[str]
+    email: Mapped[str]
+    password: Mapped[str]
 
-    documents = relationship("Document", backref="user", lazy="dynamic")
-
+    documents: Mapped["Document"] = relationship(back_populates="user")
 
     def verify_password(self, password: str):
-        return hash.bcrypt.verify(password, self.hash_password)
+        return hash.bcrypt.verify(password, self.password)
 
 
-class Document(Base):
+class Document(BaseTable):
 
     __tablename__ = "document"
 
-    id = Column(Integer, primary_key=True)
-    title = Column(String)
-    body = Column(String)
-    created_at = Column(DateTime)
-    user_id = Column(Integer, ForeignKey("user.id"))
+    title: Mapped[str] = mapped_column(sa.String(50), default="Untitled")
+    body: Mapped[Optional[str]]
+    user_id: Mapped[int] = mapped_column(sa.Integer, sa.ForeignKey("user.id"))
+    user: Mapped["User"] = relationship(back_populates="documents")
+    images: Mapped["Image"] = relationship()
 
-    images = relationship("Image", backref="document", lazy="dynamic")
 
-class Image(Base):
+class Image(BaseTable):
 
     __tablename__ = "image"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    url = Column(String)
-    doc_id = Column(Integer, ForeignKey("document.id"))
-
+    name: Mapped[str]
+    url: Mapped[str]
+    doc_id: Mapped[int] = mapped_column(sa.Integer,
+                                        sa.ForeignKey("document.id"))

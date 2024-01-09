@@ -1,25 +1,22 @@
-from pydantic import BaseModel
 from datetime import datetime
+
+from pydantic import BaseModel
+
 
 class UserBase(BaseModel):
     username: str
     email: str
-    created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
-class UserCreate(UserBase):
-    hash_password: str
 
-    class Config:
-        orm_mode = True
+class UserIn(UserBase):
+    password: str
 
-class UserModel(UserBase):
+
+class UserOut(UserBase):
     id: int
-
-    class Config:
-        orm_mode = True
 
 
 class DocumentBase(BaseModel):
@@ -29,6 +26,7 @@ class DocumentBase(BaseModel):
     body: str
     created_at: datetime
     user_id: int
+
 
 class ImageBase(BaseModel):
 
