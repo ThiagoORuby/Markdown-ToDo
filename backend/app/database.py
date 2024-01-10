@@ -1,9 +1,10 @@
-from models import Document, User
 from passlib import hash
-from settings import settings
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+
+from .models import Document, User
+from .settings import settings
 
 engine = create_engine(settings.DATABASE_URL,
                        connect_args={"check_same_thread": False})

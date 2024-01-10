@@ -1,12 +1,12 @@
 from typing import Optional
 
-from daos import DocumentDao, ImageDao
-from database import get_session
+from app.daos import DocumentDao, ImageDao
+from app.database import get_session
+from app.models import User
+from app.schemas import DocumentIn, DocumentOut, ImageIn, ImageOut
+from app.services import DocumentService, UserService
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
-from models import User
-from schemas import DocumentIn, DocumentOut, ImageIn, ImageOut
-from services import DocumentService, UserService
 from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/image", tags=['image'])

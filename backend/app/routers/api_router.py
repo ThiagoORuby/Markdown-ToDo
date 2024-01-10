@@ -1,5 +1,5 @@
+from app.routers import document, image, user
 from fastapi import APIRouter
-from routers import document, image, user
 
 app_router = APIRouter(prefix="/api", tags=['api'])
 

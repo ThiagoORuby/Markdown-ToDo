@@ -1,9 +1,10 @@
-import models
-from database import create_default_user, engine
-from fastapi import APIRouter, FastAPI
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers.api_router import app_router
-from settings import settings
+
+from .database import create_default_user, engine
+from .models import BaseTable
+from .routers.api_router import app_router
+from .settings import settings
 
 app = FastAPI(title="Markdown TODO")
 
@@ -15,7 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-models.BaseTable.metadata.create_all(bind=engine)
+BaseTable.metadata.create_all(bind=engine)
 
 create_default_user()
 

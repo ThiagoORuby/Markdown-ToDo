@@ -3,9 +3,10 @@ from datetime import datetime, timezone
 from typing import Any
 
 import sqlalchemy as sa
-from models import Document, Image, User
-from schemas import DocumentIn, ImageIn, UserIn
 from sqlalchemy.orm import Session
+
+from .models import Document, Image, User
+from .schemas import DocumentIn, ImageIn, UserIn
 
 
 class BaseDao(ABC):

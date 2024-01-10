@@ -1,13 +1,14 @@
-from daos import DocumentDao, UserDao
-from database import get_session
 from fastapi import Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib import hash
-from schemas import UserIn
-from settings import settings
 from sqlalchemy.orm import Session
+
+from .daos import DocumentDao, UserDao
+from .database import get_session
+from .schemas import UserIn
+from .settings import settings
 
 SECRET = 'mysecret'
 

@@ -1,11 +1,11 @@
 from typing import Annotated
 
-from database import get_session
+from app.database import get_session
+from app.models import User
+from app.schemas import UserIn, UserOut
+from app.services import UserService
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-from models import User
-from schemas import UserIn, UserOut
-from services import UserService
 from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/auth", tags=['auth'])
