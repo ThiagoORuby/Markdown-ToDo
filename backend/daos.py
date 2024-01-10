@@ -3,8 +3,8 @@ from datetime import datetime, timezone
 from typing import Any
 
 import sqlalchemy as sa
-from models import Document, User
-from schemas import DocumentIn, UserIn
+from models import Document, Image, User
+from schemas import DocumentIn, ImageIn, UserIn
 from sqlalchemy.orm import Session
 
 
@@ -75,3 +75,28 @@ class DocumentDao(BaseDao):
         self.session.commit()
         self.session.refresh(document)
         return document
+
+
+class ImageDao(BaseDao):
+
+    def create(self, data: ImageIn):
+
+        _image = Image(**data.model_dump())
+        self.session.add(_image)
+        self.session.commit()
+        self.session.refresh(_image)
+        return _image
+
+    def get_by_id(self, id: int):
+        return self.session.query(Image).filter(Image.id == id).first()
+
+    def get_by_doc_id(self, doc_id: int):
+        return self.session.query(Image).filter(Image.doc_id == doc_id).all()
+
+    def delete_by_id(self, id: int):
+        self.session.query(Image).filter(Image.id == id).delete()
+        self.session.commit()
+
+    def delete_by_doc_id(self, doc_id: int):
+        self.session.query(Image).filter(Image.doc_id == doc_id).delete()
+        self.session.commit()
