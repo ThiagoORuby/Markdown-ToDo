@@ -1,15 +1,11 @@
-from datetime import datetime
-from typing import Annotated
-
-from daos import UserDao
+from daos import DocumentDao, UserDao
 from database import get_session
 from fastapi import Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
-from models import User
 from passlib import hash
-from schemas import UserIn, UserOut
+from schemas import UserIn
 from settings import settings
 from sqlalchemy.orm import Session
 
@@ -112,3 +108,21 @@ class UserService:
                                 detail="Invalid username or password")
 
         return _user
+
+
+class DocumentService:
+
+    @staticmethod
+    async def validate_document(doc_id: int, user_id: int, session: Session):
+
+        _doc = DocumentDao(session).get_by_id(doc_id)
+
+        if not _doc:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Document not found")
+
+        if _doc.user_id != user_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="Not enough permissions")
+
+        return _doc
