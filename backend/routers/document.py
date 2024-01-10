@@ -1,12 +1,12 @@
 from typing import Optional
 
-from daos import DocumentDao
+from daos import DocumentDao, ImageDao
 from database import get_session
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from models import User
 from schemas import DocumentIn, DocumentOut
-from services import UserService
+from services import DocumentService, UserService
 from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/document", tags=['document'])
@@ -47,15 +47,8 @@ async def update_document(doc_id: int,
                               UserService.get_current_user),
                           session: Session = Depends(get_session)):
 
-    _doc = DocumentDao(session).get_by_id(doc_id)
-
-    if not _doc:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Document not found")
-
-    if _doc.user_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail="Not enough permissions")
+    _doc = await DocumentService.validate_document(doc_id, current_user.id,
+                                                   session)
 
     _doc = DocumentDao(session).update(_doc, data)
 
@@ -68,16 +61,10 @@ async def delete_document(doc_id: int,
                               UserService.get_current_user),
                           session: Session = Depends(get_session)):
 
-    _doc = DocumentDao(session).get_by_id(doc_id)
+    _doc = await DocumentService.validate_document(doc_id, current_user.id,
+                                                   session)
 
-    if not _doc:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Document not found")
-
-    if _doc.user_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail="Not enough permissions")
-
+    ImageDao(session).delete_by_doc_id(doc_id)
     DocumentDao(session).delete_by_id(doc_id)
 
     return JSONResponse(status_code=status.HTTP_200_OK,
