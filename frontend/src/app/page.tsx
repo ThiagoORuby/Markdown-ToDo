@@ -1,3 +1,4 @@
+import Button from '@mui/joy/Button'
 import Image from 'next/image'
 
 export default function Home() {
