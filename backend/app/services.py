@@ -10,8 +10,6 @@ from .database import get_session
 from .schemas import UserIn
 from .settings import settings
 
-SECRET = 'mysecret'
-
 oauth2schema = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 
 
