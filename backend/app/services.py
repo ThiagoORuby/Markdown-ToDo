@@ -60,9 +60,11 @@ class UserService:
                                     access_token=token,
                                     access_type="bearer",
                                 ))
-
-        response.set_cookie(key="_token", value=token, path="/")
-
+        response.set_cookie(key="access_token",
+                            value=token,
+                            httponly=True,
+                            secure=True,
+                            samesite='none')
         return response
 
     @staticmethod
