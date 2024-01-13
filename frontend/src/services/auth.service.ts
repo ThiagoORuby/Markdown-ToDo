@@ -10,8 +10,8 @@ export class AuthService{
         });
     }
 
-    login = async (username: string, password: string) => {
-        return await this.instance.post('/auth/login', {
+    login = (username: string, password: string) => {
+        return this.instance.post('/auth/login', {
             username,
             password
         }, {
@@ -25,8 +25,8 @@ export class AuthService{
         })
     }
 
-    getMe = async (token: string) => {
-        return await this.instance.get('/auth/me', {
+    getMe = (token: string) => {
+        return this.instance.get('/auth/me', {
             headers: {
                 Authorization: `Bearer ${token || ""}`
             },
@@ -37,8 +37,8 @@ export class AuthService{
             return null
         })}
 
-    logout = async () => {
-        return await this.instance.get('/auth/logout', {}).then((res) => {
+    logout = () => {
+        return this.instance.get('/auth/logout', {}).then((res) => {
             return res.data
         })
     }}

@@ -34,16 +34,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         if(!token) return;
         Cookies.set('_token', token);
-        const fetchUser = async () => {
-            await authService.getMe(token!).then((user) => {
-                if (!user)
-                {
-                    setToken(null);
-                }
-                setUser(user);
-            })
-        }
-        fetchUser();
+        authService.getMe(token!).then((user) => {
+            if (!user)
+            {
+                setToken(null);
+            }
+            setUser(user);
+        })
     }, [token])
 
     
