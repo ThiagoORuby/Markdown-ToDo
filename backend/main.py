@@ -1,25 +1,22 @@
-from fastapi import FastAPI, Depends
 from typing import Annotated
-from database import SessionLocal, engine
-from sqlalchemy.orm import Session
-from routers import user, document, image
+
 import models
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from routers import api_router
+from services.database import engine
+from services.settings import settings
 
 app = FastAPI()
 
-origins = [
-    "http://localhost:3000",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=settings.ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 models.Base.metadata.create_all(bind=engine)
 
-app.include_router(user.router)
-#app.include_router(document.router)
-#app.include_router(image.router)
-
+app.include_router(api_router.api_router)

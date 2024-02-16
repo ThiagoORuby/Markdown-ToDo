@@ -1,43 +1,53 @@
-from database import Base
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
-from passlib import hash
+import uuid
+from datetime import datetime, timezone
+from typing import Optional
 
-class User(Base):
+import sqlalchemy as sa
+from passlib import hash
+from services.database import Base
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+
+class BaseTable(Base):
+    __abstract__ = True
+    id: Mapped[str] = mapped_column(sa.CHAR(32),
+                                    primary_key=True,
+                                    default=lambda: "%.32x" % uuid.uuid4().int)
+    created_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True),
+                                                 default=datetime.utcnow())
+    updated_at: Mapped[Optional[datetime]]
+
+
+class User(BaseTable):
 
     __tablename__ = "user"
 
-    id = Column(Integer, primary_key=True)
-    username = Column(String)
-    email = Column(String)
-    hash_password = Column(String)
-    created_at = Column(DateTime)
+    username: Mapped[str] = mapped_column(sa.String, unique=True)
+    email: Mapped[str] = mapped_column(sa.String, unique=True)
+    password: Mapped[str] = mapped_column(sa.String)
 
-    documents = relationship("Document", backref="user", lazy="dynamic")
-
+    documents: Mapped[list["Document"]] = relationship()
 
     def verify_password(self, password: str):
-        return hash.bcrypt.verify(password, self.hash_password)
+        return hash.bcrypt.verify(password, self.password)
 
 
-class Document(Base):
+class Document(BaseTable):
 
     __tablename__ = "document"
 
-    id = Column(Integer, primary_key=True)
-    title = Column(String)
-    body = Column(String)
-    created_at = Column(DateTime)
-    user_id = Column(Integer, ForeignKey("user.id"))
+    title: Mapped[str]
+    body: Mapped[str] = mapped_column(sa.Text)
+    user_id: Mapped[str] = mapped_column(sa.CHAR(32), sa.ForeignKey("user.id"))
 
-    images = relationship("Image", backref="document", lazy="dynamic")
+    images: Mapped[list["Image"]] = relationship()
 
-class Image(Base):
+
+class Image(BaseTable):
 
     __tablename__ = "image"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    url = Column(String)
-    doc_id = Column(Integer, ForeignKey("document.id"))
-
+    name: Mapped[str]
+    url: Mapped[str]
+    doc_id: Mapped[str] = mapped_column(sa.CHAR(32),
+                                        sa.ForeignKey("document.id"))
